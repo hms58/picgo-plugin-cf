@@ -6,7 +6,7 @@ import picgo from 'picgo'
  */
 // export const uploadFile = async (url, requestPath, authorization, token, fileId, file, ctx: picgo) => {
 export const uploadFile = async (apiHost: string, accessToken: string, filePath: string, fileData, ctx: picgo) => {
-  const url = `${apiHost}${filePath}`
+  const url = apiHost + encodeURI(filePath)
   try {
     const data = await ctx.Request.request({
       method: 'POST',
@@ -29,8 +29,8 @@ export const uploadFile = async (apiHost: string, accessToken: string, filePath:
  * 下载图片
  * doc: /https://content.dropboxapi.com/2/files/download
  */
-export const batchDownloadFile = async (apiHost: string, filepath: string, ctx: picgo) => {
-  const url = `${apiHost}${filepath}`
+export const batchDownloadFile = async (apiHost: string, filePath: string, ctx: picgo) => {
+  const url = apiHost + encodeURI(filePath)
   try {
     const data = await ctx.Request.request({
       method: 'GET',
@@ -45,8 +45,8 @@ export const batchDownloadFile = async (apiHost: string, filepath: string, ctx: 
   }
 }
 
-export const deleteFile = async (apiHost: string, accessToken: string, filepath: string, ctx: picgo) => {
-	const url = `${apiHost}${filepath}`
+export const deleteFile = async (apiHost: string, accessToken: string, filePath: string, ctx: picgo) => {
+	const url = apiHost + encodeURI(filePath)
 	try {
 	  const data = await ctx.Request.request({
 		method: 'DELETE',

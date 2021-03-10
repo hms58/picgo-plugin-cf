@@ -3,7 +3,7 @@ import picgo from 'picgo'
 import { userConfig } from './interface'
 
 const handle = async (ctx: picgo): Promise<picgo> => {
-  const userConfig: userConfig = ctx.getConfig('picBed.dropbox')
+  const userConfig: userConfig = ctx.getConfig('picBed.cf')
   if (!userConfig) { throw new Error('找不到dropbox配置') }
   const { apiHost, path, accessToken } = userConfig
   try {
@@ -40,7 +40,7 @@ const handle = async (ctx: picgo): Promise<picgo> => {
 }
 
 const config = (ctx: picgo) => {
-  let userConfig: userConfig = ctx.getConfig('picBed.dropbox')
+  let userConfig: userConfig = ctx.getConfig('picBed.cf')
   if (!userConfig) {
     userConfig = {
       apiHost: '',
@@ -55,7 +55,7 @@ const config = (ctx: picgo) => {
       default: userConfig.accessToken,
       message: 'accessToken 不能为空',
       required: true,
-      alias: 'dropbox app accessToken'
+      alias: 'accessToken'
     },
     {
       name: 'apiHost',
@@ -63,7 +63,7 @@ const config = (ctx: picgo) => {
       default: userConfig.apiHost,
       message: 'apiHost 不能为空',
       required: true,
-      alias: 'cloudflare proxy upload'
+      alias: 'apiHost'
     },
     {
       name: 'path',
@@ -71,7 +71,7 @@ const config = (ctx: picgo) => {
       default: userConfig.path,
       message: '上传路径目录不能为空(以/开头，需要以/结尾)',
       required: true,
-      alias: '/images/'
+      alias: 'pathPrefix'
     },
   ]
   return config
@@ -79,14 +79,14 @@ const config = (ctx: picgo) => {
 
 export = (ctx: picgo) => {
   const register = () => {
-    ctx.helper.uploader.register('dropbox', {
+    ctx.helper.uploader.register('cf', {
       handle,
-      name: 'dropbox uploader',
+      name: 'dropbox uploader via cloudflare proxy',
       config
     })
   }
   return {
-    uploader: 'dropbox',
+    uploader: 'cf',
     register
   }
 }
