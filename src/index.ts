@@ -1,6 +1,5 @@
 import { uploadFile, batchDownloadFile } from './cf';
 import picgo from 'picgo'
-import { PluginConfig } from 'picgo/dist/src/utils/interfaces'
 import { userConfig } from './interface'
 
 const handle = async (ctx: picgo): Promise<picgo> => {
@@ -40,7 +39,7 @@ const handle = async (ctx: picgo): Promise<picgo> => {
   }
 }
 
-const config = (ctx: picgo): PluginConfig[] => {
+const config = (ctx: picgo) => {
   let userConfig: userConfig = ctx.getConfig('picBed.dropbox')
   if (!userConfig) {
     userConfig = {
