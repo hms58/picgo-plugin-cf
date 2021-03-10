@@ -1,9 +1,13 @@
-import { uploadFile, batchDownloadFile } from './cf';
+import { uploadFile, deleteFile } from './cf';
 import picgo from 'picgo'
 import { userConfig } from './interface'
+// import dayjs from 'dayjs'
+
+const PluginName = 'picgo-plugin-cf'
+const UploaderName = 'cf';
 
 const handle = async (ctx: picgo): Promise<picgo> => {
-  const userConfig: userConfig = ctx.getConfig('picBed.cf')
+  const userConfig: userConfig = ctx.getConfig('picBed.'+UploaderName)
   if (!userConfig) { throw new Error('找不到dropbox配置') }
   const { apiHost, path, accessToken } = userConfig
   try {
@@ -39,13 +43,57 @@ const handle = async (ctx: picgo): Promise<picgo> => {
   }
 }
 
+// function getNow () {
+// 	return dayjs().format('YYYY-MM-DD hh:mm:ss')
+// }
+
+async function onRemove (files, { showNotification }) {
+	const rms = files.filter(each => each.type === UploaderName)
+	if (rms.length === 0) return
+
+	const self: picgo = this
+	let userConfig: userConfig = self.getConfig('picBed.'+UploaderName)
+	if (!userConfig) { throw new Error('找不到dropbox配置') }
+  	const { apiHost, path, accessToken, syncDelete } = userConfig
+	if (!syncDelete) {
+		return;
+	}
+
+	const fail = []
+	for (let i = 0; i < rms.length; i++) {
+		const each = rms[i]
+		const realPath = `${path}${each.fileName}`
+		await deleteFile(apiHost, accessToken, realPath, self).catch((e) => {
+			self.log.error(e)
+			fail.push(each)
+		})
+	}
+	// if (fail.length) {
+	// 	// 确保主线程已经把文件从data.json删掉
+	// 	const uploaded  = self.getConfig('uploaded')
+	// 	uploaded.unshift(...fail)
+	// 	self.saveConfig({
+	// 	uploaded,
+	// 	[PluginName]: {
+	// 		lastSync: getNow()
+	// 	}
+	// 	})
+	// }
+
+    self.emit('notification', {
+      title: 'cf 删除提示',
+      body: fail.length === 0 ? '成功同步删除' : `删除失败${fail.length}个`
+    })
+}
+
 const config = (ctx: picgo) => {
-  let userConfig: userConfig = ctx.getConfig('picBed.cf')
+  let userConfig: userConfig = ctx.getConfig('picBed.'+UploaderName)
   if (!userConfig) {
     userConfig = {
       apiHost: '',
       accessToken: '',
       path: '/images/',
+	  syncDelete: false,
     }
   }
   const config = [
@@ -73,20 +121,29 @@ const config = (ctx: picgo) => {
       required: true,
       alias: 'pathPrefix'
     },
+	{
+		name: 'syncDelete',
+		type: 'input',
+		default: userConfig.syncDelete,
+		message: '是否同步删除数据',
+		required: true,
+		alias: 'syncDelete'
+	  },
   ]
   return config
 }
 
 export = (ctx: picgo) => {
   const register = () => {
-    ctx.helper.uploader.register('cf', {
+    ctx.helper.uploader.register(UploaderName, {
       handle,
       name: 'cf uploader',
       config
     })
+    ctx.on('remove', onRemove)
   }
   return {
-    uploader: 'cf',
+    uploader: UploaderName,
     register
   }
 }
