@@ -81,7 +81,7 @@ export = (ctx: picgo) => {
   const register = () => {
     ctx.helper.uploader.register('cf', {
       handle,
-      name: 'dropbox uploader via cloudflare proxy',
+      name: 'cf uploader',
       config
     })
   }
