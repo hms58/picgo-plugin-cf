@@ -1,6 +1,6 @@
 {
 	"name": "picgo-plugin-cf",
-	"version": "0.1.3",
+	"version": "0.1.4",
 	"description": "picGo cloudflare dropbox",
 	"main": "dist/index.js",
 	"publishConfig": {
