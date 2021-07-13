@@ -20,7 +20,7 @@ export const uploadFile = async (apiHost: string, accessToken: string, filePath:
     })
     return data
   } catch (error) {
-    ctx.log.warn('#dropbox: 上传文件失败...')
+    ctx.log.warn('#dropbox: 上传文件失败...'+url)
     throw error
   }
 }
@@ -40,7 +40,7 @@ export const batchDownloadFile = async (apiHost: string, filePath: string, ctx: 
     })
     return data
   } catch (error) {
-    ctx.log.warn('#dropbox: 下载图片失败...')
+    ctx.log.warn('#dropbox: 下载图片失败...'+url)
     throw error
   }
 }
@@ -57,7 +57,7 @@ export const deleteFile = async (apiHost: string, accessToken: string, filePath:
 	  })
 	  return data
 	} catch (error) {
-	  ctx.log.warn('#dropbox: 删除图片失败...')
+	  ctx.log.warn('#dropbox: 删除图片失败...'+url)
 	  throw error
 	}
   }
